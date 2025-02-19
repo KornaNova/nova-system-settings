@@ -3,10 +3,8 @@
 namespace Devloops\NovaSystemSettings\Contracts;
 
 use Laravel\Nova\Makeable;
-use Spatie\LaravelSettings\SettingsMapper;
 use Devloops\NovaSystemSettings\Components\Settings;
 use Spatie\LaravelSettings\Settings as SpatieSettings;
-use Devloops\NovaSystemSettings\Traits\ManeuversSettingsMigration;
 
 /**
  * Class SystemSettings.
@@ -18,7 +16,6 @@ use Devloops\NovaSystemSettings\Traits\ManeuversSettingsMigration;
 abstract class SystemSettings extends SpatieSettings
 {
     use Makeable;
-    use ManeuversSettingsMigration;
 
     /**
      * System setting's Settings component.
@@ -78,19 +75,4 @@ abstract class SystemSettings extends SpatieSettings
         return $this->settings;
     }
 
-    /**
-     * Migrate and set default values.
-     *
-     * @return void
-     */
-    public function migrateDefaultValues(): void
-    {
-        foreach (
-            $this->getSettingsComponent()
-                 ->getFieldsKeys() as $fieldKey
-        ) {
-            $this->getRepository()
-                 ->createProperty($this->getGroup(), $fieldKey, null);
-        }
-    }
 }

@@ -11,9 +11,10 @@ use Spatie\LaravelSettings\SettingsMapper as SpatieSettingsMapper;
 /**
  * Class SettingsMapper.
  *
+ * @see     https://github.com/spatie/laravel-settings/pull/298 Taken from this PR to fix default values setting.
+ * @author  Abdullah Al-Faqeir <abdullah@devloops.net>
  * @package Devloops\NovaSystemSettings
  * @date    09/05/2024
- * @author  Abdullah Al-Faqeir <abdullah@devloops.net>
  */
 class SettingsMapper extends SpatieSettingsMapper
 {
@@ -45,6 +46,7 @@ class SettingsMapper extends SpatieSettingsMapper
 
         event(new LoadingSettings($settingsClass, $properties));
 
+        $properties = $this->fillMissingSettingsWithDefaultValues($config, $properties);
         $this->ensureNoMissingSettings($config, $properties, 'loading');
 
         return $properties;
@@ -107,6 +109,25 @@ class SettingsMapper extends SpatieSettingsMapper
         }
 
         return $this->configs[$settingsClass];
+    }
+
+    private function fillMissingSettingsWithDefaultValues(SettingsConfig $config, Collection $properties): Collection
+    {
+        $config->getReflectedProperties()
+               ->keys()
+               ->diff($properties->keys())
+               ->each(function ($missingSetting) use ($config, &$properties) {
+                   /** @var ReflectionProperty $reflectionProperty */
+                   $reflectionProperty = $config->getReflectedProperties()[$missingSetting];
+
+                   if ($reflectionProperty->hasDefaultValue()
+                       || $reflectionProperty->getType()
+                                             ->allowsNull()) {
+                       $properties->put($missingSetting, $reflectionProperty->getDefaultValue());
+                   }
+               });
+
+        return $properties;
     }
 
     private function ensureNoMissingSettings(

@@ -290,16 +290,17 @@ export default {
     :is(.active\:text-white:is(.active *)) {
         color: white;
     }
-}
 
-/* we will explain what these classes do next! */
-.v-enter-active,
-.v-leave-active {
-    transition: opacity 0.3s ease;
-}
+    /* we will explain what these classes do next! */
 
-.v-enter-from,
-.v-leave-to {
-    opacity: 0;
+    .v-enter-active,
+    .v-leave-active {
+        transition: opacity 0.3s ease;
+    }
+
+    .v-enter-from,
+    .v-leave-to {
+        opacity: 0;
+    }
 }
 </style>
